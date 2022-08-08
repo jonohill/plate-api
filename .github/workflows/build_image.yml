@@ -9,7 +9,8 @@ on:
       - main
 
 env:
-  DOCKER_REPO: ghcr.io/jonohill/plate-api
+  DOCKER_REGISTRY: ghcr.io
+  DOCKER_REPO: jonohill/plate-api
 
 jobs:
   main:
