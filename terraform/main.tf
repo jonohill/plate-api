@@ -14,8 +14,6 @@ data "aws_region" "current" {}
 # Image
 # ‾‾‾‾‾
 
-# Annoyingly, lambda can't use public ECR images so this mirrors it to a private repo
-
 locals {
   image_registry = "${data.aws_caller_identity.current.account_id}.dkr.ecr.${data.aws_region.current.id}.amazonaws.com"
 }

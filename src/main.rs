@@ -1,16 +1,39 @@
-use actix_web::{HttpServer, Responder, get, HttpResponse, App, middleware};
+use actix_web::{web, HttpServer, Responder, get, HttpResponse, App, middleware, ResponseError};
 use figment::{providers::Env, Figment};
+use plate::PlateClient;
 use serde::Deserialize;
+
+use crate::plate::PlateError;
+
+mod plate;
 
 #[derive(Clone, Debug, PartialEq, Deserialize)]
 struct Config {
     jwt_secret: String,
     listen_port: Option<u16>,
+    user_agent: Option<String>,
+}
+
+impl ResponseError for PlateError {
+
 }
 
 #[get("/ok")]
 async fn ok() -> impl Responder {
     HttpResponse::Ok().body("ok")
+}
+
+#[get("/{plate}")]
+async fn get_vehicle(plates: web::Data<PlateClient>, plate: web::Path<String>) -> Result<impl Responder, PlateError> {
+    let plate = plate.into_inner();
+    
+    let vehicle = plates.search_plate(&plate).await?;
+    
+    let response = HttpResponse::Ok()
+        .append_header(("Cache-Control", "max-age=604800"))
+        .json(vehicle);
+
+    Ok(response)
 }
 
 #[actix_web::main]
@@ -28,11 +51,15 @@ async fn main() -> std::io::Result<()> {
         .unwrap();
     let port = config.listen_port.unwrap_or(8080);
 
+    let plate_client = web::Data::new(PlateClient::new(config.user_agent.clone()));
+
     HttpServer::new(move || {
         App::new()
-            // .app_data(web::Data::new(config.clone()))
+            .app_data(web::Data::new(config.clone()))
+            .app_data(plate_client.clone())
             .wrap(middleware::Compress::default())
             .service(ok)
+            .service(get_vehicle)
     })
     .bind(("0.0.0.0", port))?
     .run()

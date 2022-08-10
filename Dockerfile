@@ -14,4 +14,6 @@ COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.3.3 /lambda-adapter /opt
 
 COPY --from=builder /usr/local/cargo/bin/plate-api /usr/local/bin/plate-api
 
+ARG PLATE_API_USER_AGENT
+
 ENTRYPOINT [ "plate-api" ]
