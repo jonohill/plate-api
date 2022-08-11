@@ -1,5 +1,5 @@
-use actix_web::{web, HttpServer, Responder, get, HttpResponse, App, middleware, ResponseError};
 use actix_web::http::StatusCode;
+use actix_web::{get, middleware, web, App, HttpResponse, HttpServer, Responder, ResponseError};
 use figment::{providers::Env, Figment};
 use plate::PlateClient;
 use serde::Deserialize;
@@ -30,11 +30,14 @@ async fn ok() -> impl Responder {
 }
 
 #[get("/{plate}")]
-async fn get_vehicle(plates: web::Data<PlateClient>, plate: web::Path<String>) -> Result<impl Responder, PlateError> {
+async fn get_vehicle(
+    plates: web::Data<PlateClient>,
+    plate: web::Path<String>,
+) -> Result<impl Responder, PlateError> {
     let plate = plate.into_inner();
-    
+
     let vehicle = plates.search_plate(&plate).await?;
-    
+
     let response = HttpResponse::Ok()
         .append_header(("Cache-Control", "max-age=604800"))
         .json(vehicle);
