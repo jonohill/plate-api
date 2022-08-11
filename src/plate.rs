@@ -33,7 +33,7 @@ struct RightcarVehicle {
 
 #[derive(Debug, Deserialize)]
 struct RightcarResponse {
-    detail: Vec<RightcarVehicle>,
+    detail: Option<Vec<RightcarVehicle>>,
 } 
 
 #[derive(Debug, Serialize)]
@@ -101,9 +101,10 @@ impl PlateClient {
             .await?;
         log::debug!("{}", response_str);
 
-        let mut response: RightcarResponse = serde_json::from_str(&response_str)?;
+        let response: RightcarResponse = serde_json::from_str(&response_str)?;
 
-        if let Some(vehicle) = response.detail.pop() {
+        let vehicle = response.detail.and_then(|mut d| d.pop());
+        if let Some(vehicle) = vehicle {
             Ok(vehicle)
         } else {
             Err(PlateError::NotFound)

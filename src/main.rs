@@ -1,4 +1,5 @@
 use actix_web::{web, HttpServer, Responder, get, HttpResponse, App, middleware, ResponseError};
+use actix_web::http::StatusCode;
 use figment::{providers::Env, Figment};
 use plate::PlateClient;
 use serde::Deserialize;
@@ -15,7 +16,12 @@ struct Config {
 }
 
 impl ResponseError for PlateError {
-
+    fn status_code(&self) -> StatusCode {
+        match self {
+            PlateError::NotFound => StatusCode::NOT_FOUND,
+            _ => StatusCode::BAD_GATEWAY,
+        }
+    }
 }
 
 #[get("/ok")]
