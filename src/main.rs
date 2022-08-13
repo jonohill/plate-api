@@ -29,7 +29,7 @@ async fn ok() -> impl Responder {
     HttpResponse::Ok().body("ok")
 }
 
-#[get("/{plate}")]
+#[get("/vehicle/{plate}")]
 async fn get_vehicle(
     plates: web::Data<PlateClient>,
     plate: web::Path<String>,
