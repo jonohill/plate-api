@@ -76,6 +76,7 @@ module "lambda_function_container_image" {
 
   environment_variables = {
     "PLATE_API_JWT_SECRET" = var.jwt_secret
+    "RUST_LOG" = "debug"
   }
 
 }

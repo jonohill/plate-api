@@ -1,17 +1,16 @@
-FROM rust:1.62.1-alpine AS builder
+FROM rust:1.62.1 AS builder
 
 WORKDIR /build
 COPY . .
 
-RUN apk add musl-dev \
-    openssl-dev
-
 RUN cargo install --path .
 
 
-FROM alpine
+FROM debian:stable-slim
 
-RUN apk add --no-cache libc6-compat
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 # Adds support for running in Lambda
 ENV READINESS_CHECK_PATH=/ok
