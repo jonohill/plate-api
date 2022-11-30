@@ -1,1 +1,1 @@
-FROM ghcr.io/jonohill/plate-api:924
+FROM ghcr.io/jonohill/plate-api:926
