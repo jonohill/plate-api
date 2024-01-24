@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
 
 # Adds support for running in Lambda
 ENV READINESS_CHECK_PATH=/ok
-COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.6.0 /lambda-adapter /opt/extensions/lambda-adapter
+COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.8.1 /lambda-adapter /opt/extensions/lambda-adapter
 
 COPY --from=builder /usr/local/cargo/bin/plate-api /usr/local/bin/plate-api
 
